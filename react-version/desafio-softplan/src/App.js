@@ -1,73 +1,48 @@
 import React, { Component } from 'react';
 import './App.css';
 
-import { InputGroup, Input } from 'reactstrap';
-
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Redirect, withRouter, Switch } from 'react-router-dom';
 import Test from './components/Test';
-
-
-const Home = () => {
-  return <h1>Home</h1>
-}
-
+import Home from './components/Home';
 class App extends Component {
-
   constructor(props) {
-    super(props);
-    this.state = {
-      modal: false
-    };
-
-    this.toggle = this.toggle.bind(this);
+    super(props)
+    let handleToUpdate = this.handleToUpdate.bind(this);
   }
 
-  toggle() {
-    this.setState({
-      modal: !this.state.modal
-    });
+  state = {
+    toDashboard: false,
   }
 
+  handleToUpdate(someArg) {
+    console.log('We pass argument from Child to Parent: ' + someArg);
+    this.setState({toDashboard: !someArg});
+    console.log(this.setState);
+  }
 
   render() {
-    
-    <Router>
-      <Route path="/" component={Home} />
-    </Router>
+    const handleToUpdate = this.handleToUpdate
+
+    if (this.state.toDashboard === true) {
+      debugger
+      return <Redirect to='/test' />
+    }
 
     return (
       <div className="App">
-        <Router>
-          <div>
-            <Route exact path="/" component={Home} />
-            <Route path="/test" render={() => <Test name="Testing" />} />
-          </div>
-          
-        </Router>
         <div className="container">
-          <div className="row">
-            <div className="col">
-              <h3>Busca de Processos</h3>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col"></div>
-            <div className="col">
-              <InputGroup className="input-busca text-center">
-                <Input placeholder="Pesquise por uma informação do processo" />
-              </InputGroup>
-            </div>
-            <div className="col"></div>
-          </div>
-          <div className="row">
-            <div className="col">
-              <span>Você pode criar um novo processo <a href="">clicando aqui</a>.</span>
-            </div>
-          </div>
+          <Switch>
+            <Router>
+              <div>
+                <Route exact path="/" render={() => <Home handleToUpdate={handleToUpdate.bind(this)} />} />
+                <Route path="/test" render={() => <Test name="Testing" />} />
+              </div>
+            </Router>
+          </Switch>
         </div>
       </div>
     );
   }
 }
 
-export default App;
+export default withRouter(App);
